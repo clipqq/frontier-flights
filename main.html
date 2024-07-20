@@ -826,17 +826,21 @@
                     cities.add(parts[1])
                 })
 
+                const sortedCities = Array.from(cities).sort()
+
                 const originSelect = document.getElementById('origin')
                 const destinationSelect = document.getElementById('destination')
 
-                cities.forEach((city) => {
+                sortedCities.forEach((city) => {
                     originSelect.add(new Option(city, city))
                     destinationSelect.add(new Option(city, city))
                 })
             }
+
             function findRoute() {
                 const origin = document.getElementById('origin').value
                 const destination = document.getElementById('destination').value
+                const nonStop = document.getElementById('nonStop').checked
                 const oneStop = document.getElementById('oneStop').checked
                 const multiStop = document.getElementById('multiStop').checked
                 const resultDiv = document.getElementById('result')
@@ -846,10 +850,10 @@
                     const paths = findAllPaths(origin, destination, 3)
                     displayResults(paths, resultDiv)
                 } else if (oneStop) {
-                    const paths = findAllPaths(origin, destination, 1)
+                    const paths = findAllPaths(origin, destination, 2)
                     displayResults(paths, resultDiv)
-                } else {
-                    const paths = findAllPaths(origin, destination, 0)
+                } else if (nonStop) {
+                    const paths = findAllPaths(origin, destination, 1)
                     displayResults(paths, resultDiv)
                 }
             }
@@ -873,7 +877,10 @@
                 function search(currentPath, stops) {
                     let lastCity = currentPath[currentPath.length - 1]
                     if (stops > maxStops) return
-                    if (lastCity === destination) {
+                    if (
+                        lastCity === destination &&
+                        currentPath.length <= maxStops + 1
+                    ) {
                         result.push([...currentPath])
                         return
                     }
@@ -892,6 +899,7 @@
                 search([origin], 0)
                 return result
             }
+
             window.onload = populateOptions // Populate dropdowns on page load
         </script>
     </head>
@@ -908,6 +916,16 @@
                     <select id="destination" class="form-control"></select>
                 </div>
                 <div class="col-md-4 align-self-end">
+                    <div class="form-check mb-2">
+                        <input
+                            class="form-check-input"
+                            type="checkbox"
+                            id="nonStop"
+                        />
+                        <label class="form-check-label" for="nonStop">
+                            Non-Stop
+                        </label>
+                    </div>
                     <div class="form-check mb-2">
                         <input
                             class="form-check-input"
